@@ -154,7 +154,7 @@ def decrypt_cipher() -> None:
     rail: list[list[str]] = [["\n" for i in range(length)] for j in range(rails)]
 
     # Initialize the row and column indices, and dir_down.
-    row, col, dir_down = 0, 0, True
+    row, col, dir_down = 0, 0, False
 
     # Mark the places with '*' where the letters will be placed
     for i in range(length):
