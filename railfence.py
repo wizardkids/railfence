@@ -34,7 +34,7 @@ from icecream import ic
 VERSION = "0.1"
 
 
-@click.command(help="The utility encrypts, and subsequently decrypts, a message using railfence encryption", epilog="")
+@click.command(help="The utility either encrypts or decrypts a message using railfence encryption.", epilog="")
 @click.argument("plaintext", type=str, required=False)
 @click.option("-r", "--rails", default=3, show_default=True, type=int, help="Number of rails.")
 @click.option("-e", "--encrypt", is_flag=True, type=bool, default=False, help="Encrypt the plaintext.")

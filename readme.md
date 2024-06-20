@@ -8,14 +8,14 @@ The script provides two main functions:
 
 1. `encrypt_railfence(plaintext, num_rails)`: Converts the plaintext string into a set of "rails". The encrypted message, along with the number of rails, is saved in `encrypted_message.json`.
 
-2. `decrypt_railfence(ciphertext, num_rails)`: Decrypts the encrypted message stored in `encrypted_message.json` using the provided number of rails.
+2. `decrypt_railfence(ciphertext, num_rails)`: Decrypts the encrypted message stored in `encrypted_message.json` using the provided number of rails. The decrypted text is saved in `decrypted_message.txt`.
 
 ## Usage
 $ `python railfence.py --help`
 
 Usage: railfence.py [OPTIONS] [PLAINTEXT]
 
-  The utility encrypts, and subsequently decrypts, a message using railfence encryption
+  The utility either encrypts or decrypts a message using railfence encryption.
 
 Options:
   -r, --rails INTEGER  Number of rails.  [default: 3]
@@ -25,7 +25,7 @@ Options:
   --help               Show this message and exit.
 
 To encrypt a plaintext message:
-$ `python railfence.py "WEAREDISCOVEREDFLEEATONCE" -r 3 -e`
+$ `python railfence.py -r 3 -e "WEAREDISCOVEREDFLEEATONCE"`
 
 This will create a file `encrypted_message.json` containing the encrypted message and the number of rails used.
 
@@ -34,19 +34,21 @@ $ `python railfence.py -d`
 
 This will read the `encrypted_message.json` file and decrypt the message using the stored number of rails, creating a `decrypted_message.json` file with the original plaintext.
 
+If only a message is provided on the command line, it will be encrypted. If there is no message and no options, `encrypted_message.txt` will be decrypted.
+
 ## Example
 
 Below is a sample encryption of the plaintext "WEAREDISCOVEREDFLEEATONCE" using a railfence with 3 rails to generate the ciphertext:
 
 The message is written diagonally...
 
-W . . . E . . . C . . . R . . . L . . . T . . . E
-. E . R . D . S . O . E . E . F . E . A . O . C .
-. . A . . . I . . . V . . . D . . . E . . . N . .
+`W . . . E . . . C . . . R . . . L . . . T . . . E`</br>
+`. E . R . D . S . O . E . E . F . E . A . O . C .`</br>
+`. . A . . . I . . . V . . . D . . . E . . . N . .`</br>
 
 but when read laterally, left to right and top to bottom, we get:
 
-"WECRLTEERDSOEEFEAOCAIVDEN"
+`WECRLTEERDSOEEFEAOCAIVDEN`
 
 ## Note
 
