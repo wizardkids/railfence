@@ -3,9 +3,12 @@
      Version: 0.1
       Author: Richard E. Rawson
         Date: 2023-05-02
- Description: Railfence Cipher
+ Description: Take a plaintext message and encrypt it then decrypt it, using railfence cipher. The encrypted and decrypted message are printed to the terminal.
 
-Below is a sample encryption of the plaintext "WEAREDISCOVEREDFLEEATONCE" using a railfence with 3 rails to generate the ciphertext "WECRLTEERDSOEEFEAOCAIVDEN"
+CODENOTE: The plaintext message and the number of rails must be entered manually at the end of this program.
+
+Below is a sample encryption of the plaintext "WEAREDISCOVEREDFLEEATONCE" using a railfence with 3 rails to generate the ciphertext:
+    "WECRLTEERDSOEEFEAOCAIVDEN"
 
 We write the message diagonally...
 
@@ -23,21 +26,26 @@ Source: https://en.wikipedia.org/wiki/Rail_fence_cipher
 
 """
 
+from icecream import ic
+
 
 def generate_cipher_string(plaintext: str, rails: int) -> str:
     """
     Converts the plaintext string into a set of "rails". The "rails" are subsets of the outer list: list[list[str]], where each element of a rail is a letter from plaintext.
 
-    Args:
-        plaintext (str): the original text to be encrypted
-        rails (int): the number of rails, specified initially
+    Parameters
+    ----------
+    plaintext (str): the original text to be encrypted
+    rails (int): the number of rails, specified initially
 
-    Return:
-        [list[list[str]]]: the set of rails populated with characters from the "plaintext" string.
+    Returns
+    -------
+    str -- the encrypted message
     """
 
-    # Create the 2D array to hold the characters from "plaintext".
-    cipher_list = []
+    # Create an empty 2D array to hold the characters from "plaintext".
+    # There will be one sublist for each rail.
+    cipher_list: list[any] = []
     for rail in range(rails):
         cipher_list.append([])
 
@@ -47,10 +55,10 @@ def generate_cipher_string(plaintext: str, rails: int) -> str:
         ndx += 1
         cipher_list[rail].append(plaintext[ndx])
 
-        # Update the rail number based on the direction
+        # Update the rail number based on the direction.
         rail += direction
 
-        # If the rail number reaches 2 or 0, reverse the direction
+        # If the rail number reaches one less than the number of rails or 0, reverse the direction.
         if rail == rails - 1 or rail == 0:
             direction *= -1
 
@@ -58,10 +66,7 @@ def generate_cipher_string(plaintext: str, rails: int) -> str:
         if ndx == len(plaintext) - 1:
             break
 
-    cipher_string = []
-    for i in cipher_list:
-        for j in i:
-            cipher_string.append(j)
+    cipher_string: list[str] = flatten_list(cipher_list)
 
     return "".join(cipher_string)
 
@@ -70,26 +75,28 @@ def decode_cipher(cipher: str, rails: int) -> str:
     """
     Considering that the math behind deciphering a rail fence crypto is beyond me, I asked Bing chat to generate the following code. This code takes a string that is the encryption of the original plain text and decrypts it.
 
-    CODENOTE: Neither Bing,Bard, nor chatGPT could provide code for decrypting a string if the key (number of rails) was unknown.
+    CODENOTE: No AI could even suggest code for decrypting a string if the key (number of rails) was unknown. DON'T LOSE THE KEY!
 
     CODENOTE: This code requires knowing how many rails there are.
 
-    Args:
-        cipher (str): the cipher of the original "plaintext" string
-        rails (int): the number of rails (sublists)
+    Parameters
+    ----------
+    cipher : str -- the cipher of the original "plaintext" string
+    rails : int -- the number of rails (sublists)
 
-    Returns:
-        str: the decrypted string, the same as the original "plaintext"
+    Returns
+    -------
+    str -- the decrypted string, the same as the original "plaintext"
     """
 
     # Initialize an empty string for the plaintext
-    decrypted_cipher = ""
+    decrypted_cipher: str = ""
 
     # Calculate the length of the ciphertext
-    length = len(cipher)
+    length: int = len(cipher)
 
     # Create an empty rail matrix with the same size as the ciphertext
-    rail = [["\n" for i in range(length)] for j in range(rails)]
+    rail: list[list[str]] = [["\n" for i in range(length)] for j in range(rails)]
 
     # Set the direction to move down
     dir_down = None
@@ -151,27 +158,34 @@ def decode_cipher(cipher: str, rails: int) -> str:
     return decrypted_cipher
 
 
+def flatten_list(target: list[list[str]]) -> list[str]:
+    """
+    Flattens an n-dimensional list into a one-dimensional list. "n" can be any value.
+
+    Parameters
+    ----------
+    target : list -- any n-dimensional list
+
+    Returns
+    -------
+    list -- flattened list
+    """
+
+    return sum((flatten_list(sub) if isinstance(sub, list) else [sub] for sub in target), [])
+
+
 def main(plaintext, rails):
     """
-    "WEAREDISCOVEREDFLEEATONCE"
-
-    W . . . E . . . C . . . R . . . L . . . T . . . E
-    . E . R . D . S . O . E . E . F . E . A . O . C .
-    . . A . . . I . . . V . . . D . . . E . . . N . .
-
-    "WECRLTEERDSOEEFEAOCAIVDEN"
-
+    This is the main organizing function for this program. It generates the cipher, then decodes it, printing the results to the terminal.
     """
 
-    cipher = generate_cipher_string(plaintext, rails)
+    cipher: str = generate_cipher_string(plaintext, rails)
 
-    decrypted_cipher = decode_cipher(cipher, rails)
+    decrypted_cipher: str = decode_cipher(cipher, rails)
 
-    print(plaintext)
-    print()
-    print(cipher)
-    print()
-    print(decrypted_cipher)
+    print(f'\nOriginal message:\n{plaintext}\n', sep="")
+    print(f'Encrypted message:\n{cipher}\n', sep="")
+    print(f'Decrypted message:\n{decrypted_cipher}\n', sep="")
 
 
 if __name__ == '__main__':
@@ -179,7 +193,7 @@ if __name__ == '__main__':
     plaintext = "WEAREDISCOVEREDFLEEATONCE"
     # cipher_text = "WECRLTEERDSOEEFEAOCAIVDEN"
 
-    plaintext = "In the café, the bánh mì sandwich is a popular choice among the regulars. The flaky baguette, stuffed with savory grilled pork, pickled daikon and carrots, fresh cilantro, and a dollop of sriracha mayo, is the perfect lunchtime indulgence. As I sipped my matcha latte, I noticed the barista's shirt had a cute ねこ (neko, or cat) graphic on it. It reminded me of the time I visited Tokyo and saw the famous 東京タワー (Tokyo Tower) at night, aglow with colorful lights. The world is full of unique and beautiful symbols, and Unicode makes it possible to express them all in one cohesive language."
+    # plaintext = "In the café, the bánh mì sandwich is a popular choice among the regulars. The flaky baguette, stuffed with savory grilled pork, pickled daikon and carrots, fresh cilantro, and a dollop of sriracha mayo, is the perfect lunchtime indulgence. As I sipped my matcha latte, I noticed the barista's shirt had a cute ねこ (neko, or cat) graphic on it. It reminded me of the time I visited Tokyo and saw the famous 東京タワー (Tokyo Tower) at night, aglow with colorful lights. The world is full of unique and beautiful symbols, and Unicode makes it possible to express them all in one cohesive language."
 
     rails = 3  # number of rails; MUST be < len(plaintext)
 
