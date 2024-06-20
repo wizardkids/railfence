@@ -27,6 +27,7 @@ Source: https://en.wikipedia.org/wiki/Rail_fence_cipher
 """
 
 import json
+
 import click
 from icecream import ic
 
@@ -40,6 +41,16 @@ VERSION = "0.1"
 @click.option("-d", "--decrypt", is_flag=True, type=bool, default=False, help="Decrypt the encrypted text.")
 @click.version_option(version=VERSION)
 def cli(plaintext: str, rails: int, encrypt: bool, decrypt: bool) -> None:
+    """
+    Main entry point for CLI.
+
+    Parameters
+    ----------
+    plaintext : str -- the original text to be encrypted
+    rails : int -- the number of rails, specified initially
+    encrypt : bool -- If true, encrypt the plaintext.
+    decrypt : bool -- If true, decrypt the encrypted text.
+    """
 
     # print()
     # ic(plaintext)
@@ -143,10 +154,9 @@ def decrypt_cipher() -> None:
     rail: list[list[str]] = [["\n" for i in range(length)] for j in range(rails)]
 
     # Initialize the row and column indices, and dir_down.
-    row, col, dir_down = 0, 0, None
+    row, col, dir_down = 0, 0, True
 
     # Mark the places with '*' where the letters will be placed
-    c_loc = 0  # index to track the ciphertext
     for i in range(length):
         # If we reach the top or bottom rail, change the direction
         if row == 0 or row == rails - 1:
