@@ -29,12 +29,16 @@ Options:
 To encrypt a plaintext message:</br>
 $ `python railfence.py -r 3 -e "WEAREDISCOVEREDFLEEATONCE"`
 
-This will create a file `encrypted_message.json` containing the encrypted message and the number of rails used.
+This will create a file `encrypted_message.json` containing the encrypted message and the number of rails used. Note that this example is equivalent to:
+
+$ `python railfence.py "WEAREDISCOVEREDFLEEATONCE"`
+
+since a message by itself (no options) will automatically encrypt over 3 rails.
 
 To decrypt an encrypted message:</br>
-$ `python railfence.py -d`
+$ `python railfence.py -d` or `python railfence.py`
 
-This will read the `encrypted_message.json` file and decrypt the message using the stored number of rails, creating a `decrypted_message.json` file with the original plaintext.
+Either one will read `encrypted_message.json` and decrypt the message using the stored number of rails, creating a `decrypted_message.json` file with the original plaintext.
 
 If only a message is provided on the command line, it will be encrypted. If there is no message and no options, `encrypted_message.txt` will be decrypted.
 
@@ -70,5 +74,5 @@ The list if flattened and then, using join(), a single string is generated:
 
 ## Warnings
 
-1. This program requires knowing the number of rails used for encryption in order to decrypt the message correctly. If the number of rails is unknown, decryption is not possible.</br></br>
-2. The number of rails used for encryption is stored with the encrypted message, violating every known law of cybersecurity. Considering that decryption requires knowing the number of rails, that number must be preserved. For the time being it is preserved *with* the encrypted message. Changing that strategy to improve security would be trivial, although saving the number of rails somewhere may be anything but.
+1. This program requires knowing the number of rails used for encryption in order to decrypt the message correctly. If the number of rails is unknown, decryption is not possible except by brute force (not terribly hard!).</br></br>
+2. The number of rails used for encryption is stored with the encrypted message, violating every known law of cybersecurity. Considering that decryption requires knowing the number of rails, that number must be preserved. For the time being it is preserved *with* the encrypted message. Changing that strategy to improve security would be trivial while saving the number of rails depends on human memory which is known to be unreliable.
