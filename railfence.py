@@ -27,8 +27,6 @@ Source: https://en.wikipedia.org/wiki/Rail_fence_cipher
 """
 
 import json
-from pprint import pprint
-
 import click
 from icecream import ic
 
@@ -43,12 +41,12 @@ VERSION = "0.1"
 @click.version_option(version=VERSION)
 def cli(plaintext: str, rails: int, encrypt: bool, decrypt: bool) -> None:
 
-    print()
-    ic(plaintext)
-    ic(type(rails), rails)
-    ic(type(encrypt), encrypt)
-    ic(type(decrypt), decrypt)
-    print()
+    # print()
+    # ic(plaintext)
+    # ic(type(rails), rails)
+    # ic(type(encrypt), encrypt)
+    # ic(type(decrypt), decrypt)
+    # print()
 
     # If there's plaintext, then encrypt, regardless of --encrypt or --decrypt.
     if plaintext is not None:
@@ -72,23 +70,22 @@ def cli(plaintext: str, rails: int, encrypt: bool, decrypt: bool) -> None:
         decrypt_cipher()
 
     else:
-        print(f"Invalid command line arguments.\n", sep="")
+        print("Invalid command line arguments.\n", sep="")
 
 
-def encrypt_message(plaintext: str, rails: int):
+def encrypt_message(plaintext: str, rails: int) -> None:
     """
     Converts the plaintext string into a set of "rails". The "rails" are subsets of the outer list: list[list[str]], where each element of a rail is a letter from plaintext. Encrypted message, along with the number of rails, is saved in "encrypted_message.json".
 
     Parameters
     ----------
-    plaintext (str): the original text to be encrypted
-    rails (int): the number of rails, specified initially
-
+    plaintext : str -- the original text to be encrypted
+    rails : int -- the number of rails, specified initially
     """
 
     # Create an empty 2D array to hold the characters from "plaintext".
     # There will be one sublist for each rail.
-    cipher_list: list[any] = []
+    cipher_list: list[list[str]] = []
     for rail in range(rails):
         cipher_list.append([])
 
@@ -128,10 +125,6 @@ def decrypt_cipher() -> None:
     ----------
     cipher : str -- the cipher of the original "plaintext" string
     rails : int -- the number of rails (sublists)
-
-    Returns
-    -------
-    str -- the decrypted string, the same as the original "plaintext"
     """
 
     with open("encrypted_message.json", "r", encoding="utf-8") as file:
@@ -215,17 +208,12 @@ def flatten_list(target: list[list[str]]) -> list[str]:
     list -- flattened list
     """
 
-    return sum((flatten_list(sub) if isinstance(sub, list) else [sub] for sub in target), [])
+    flat_list: list[str] = sum((flatten_list(sub) if isinstance(sub, list) else [sub] for sub in target), [])
+
+    return flat_list
 
 
 if __name__ == '__main__':
-
-    plaintext = "WEAREDISCOVEREDFLEEATONCE"
-    # cipher_text = "WECRLTEERDSOEEFEAOCAIVDEN"
-
-    # plaintext = "In the café, the bánh mì sandwich is a popular choice among the regulars. The flaky baguette, stuffed with savory grilled pork, pickled daikon and carrots, fresh cilantro, and a dollop of sriracha mayo, is the perfect lunchtime indulgence. As I sipped my matcha latte, I noticed the barista's shirt had a cute ねこ (neko, or cat) graphic on it. It reminded me of the time I visited Tokyo and saw the famous 東京タワー (Tokyo Tower) at night, aglow with colorful lights. The world is full of unique and beautiful symbols, and Unicode makes it possible to express them all in one cohesive language."
-
-    rails = 3  # number of rails; MUST be < len(plaintext)
 
     print()
     cli()
