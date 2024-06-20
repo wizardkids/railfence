@@ -26,21 +26,64 @@ Source: https://en.wikipedia.org/wiki/Rail_fence_cipher
 
 """
 
+import json
+from pprint import pprint
+
+import click
 from icecream import ic
 
+VERSION = "0.1"
 
-def generate_cipher_string(plaintext: str, rails: int) -> str:
+
+@click.command(help="", epilog="")
+@click.argument("plaintext", type=str, required=False)
+@click.option("-r", "--rails", default=3, show_default=True, type=int, help="Number of rails.")
+@click.option("-e", "--encrypt", is_flag=True, type=bool, default=False, help="Encrypt the plaintext.")
+@click.option("-d", "--decrypt", is_flag=True, type=bool, default=False, help="Decrypt the encrypted text.")
+@click.version_option(version=VERSION)
+def cli(plaintext: str, rails: int, encrypt: bool, decrypt: bool) -> None:
+
+    print()
+    ic(plaintext)
+    ic(type(rails), rails)
+    ic(type(encrypt), encrypt)
+    ic(type(decrypt), decrypt)
+    print()
+
+    # If there's plaintext, then encrypt, regardless of --encrypt or --decrypt.
+    if plaintext is not None:
+        encrypt = True
+        decrypt = False
+
+    # If -e is set but there's not plaintext.
+    if encrypt and plaintext is None:
+        print("\nNo plaintext message was provided.\n", sep="")
+        exit()
+
+    # If there's no plaintext, then we must mean to decrypt.
+    if plaintext is None:
+        decrypt = True
+        encrypt = False
+
+    if encrypt:
+        encrypt_message(plaintext, rails)
+
+    elif decrypt:
+        decrypt_cipher()
+
+    else:
+        print(f"Invalid command line arguments.\n", sep="")
+
+
+def encrypt_message(plaintext: str, rails: int):
     """
-    Converts the plaintext string into a set of "rails". The "rails" are subsets of the outer list: list[list[str]], where each element of a rail is a letter from plaintext.
+    Converts the plaintext string into a set of "rails". The "rails" are subsets of the outer list: list[list[str]], where each element of a rail is a letter from plaintext. Encrypted message, along with the number of rails, is saved in "encrypted_message.json".
 
     Parameters
     ----------
     plaintext (str): the original text to be encrypted
     rails (int): the number of rails, specified initially
 
-    Returns
-    -------
-    str -- the encrypted message
     """
 
     # Create an empty 2D array to hold the characters from "plaintext".
@@ -67,11 +110,13 @@ def generate_cipher_string(plaintext: str, rails: int) -> str:
             break
 
     cipher_string: list[str] = flatten_list(cipher_list)
+    encrypted_dict: dict[str, str | int] = {"cipher": "".join(cipher_string), "rails": rails}
 
-    return "".join(cipher_string)
+    with open("encrypted_message.json", "w", encoding="utf-8") as file:
+        json.dump(encrypted_dict, file)
 
 
-def decode_cipher(cipher: str, rails: int) -> str:
+def decrypt_cipher() -> None:
     """
     Considering that the math behind deciphering a rail fence crypto is beyond me, I asked Bing chat to generate the following code. This code takes a string that is the encryption of the original plain text and decrypts it.
 
@@ -89,6 +134,12 @@ def decode_cipher(cipher: str, rails: int) -> str:
     str -- the decrypted string, the same as the original "plaintext"
     """
 
+    with open("encrypted_message.json", "r", encoding="utf-8") as file:
+        encrypted_dict = json.load(file)
+
+    cipher: str = encrypted_dict["cipher"]
+    rails: int = encrypted_dict["rails"]
+
     # Initialize an empty string for the plaintext
     decrypted_cipher: str = ""
 
@@ -98,30 +149,24 @@ def decode_cipher(cipher: str, rails: int) -> str:
     # Create an empty rail matrix with the same size as the ciphertext
     rail: list[list[str]] = [["\n" for i in range(length)] for j in range(rails)]
 
-    # Set the direction to move down
-    dir_down = None
-    # Initialize the row and column indices
-    row, col = 0, 0
+    # Initialize the row and column indices, and dir_down.
+    row, col, dir_down = 0, 0, None
 
     # Mark the places with '*' where the letters will be placed
+    c_loc = 0  # index to track the ciphertext
     for i in range(length):
         # If we reach the top or bottom rail, change the direction
-        if row == 0:
-            dir_down = True
-        elif row == rails - 1:
-            dir_down = False
+        if row == 0 or row == rails - 1:
+            dir_down: bool = not dir_down
 
         # Mark the place with '*'
         rail[row][col] = '*'
 
-        # Move to the next column
+        # Move to the next column.
         col += 1
 
-        # Move up or down the row based on the direction
-        if dir_down:
-            row += 1
-        else:
-            row -= 1
+        # Move up or down the row based on the direction.
+        row += 1 if dir_down else -1
 
     # Initialize the index to track the ciphertext
     index = 0
@@ -135,6 +180,7 @@ def decode_cipher(cipher: str, rails: int) -> str:
 
     # Reset the row and column indices
     row, col = 0, 0
+
     # Read the decrypted_cipher from the rail matrix in zig-zag order
     for i in range(length):
         # If we reach the top or bottom rail, change the direction
@@ -150,12 +196,10 @@ def decode_cipher(cipher: str, rails: int) -> str:
         col += 1
 
         # Move up or down the row based on the direction
-        if dir_down:
-            row += 1
-        else:
-            row -= 1
+        row: int = row + 1 if dir_down else row - 1
 
-    return decrypted_cipher
+    with open("decrypted_message.json", "w", encoding="utf-8") as file:
+        json.dump(decrypted_cipher, file)
 
 
 def flatten_list(target: list[list[str]]) -> list[str]:
@@ -174,20 +218,6 @@ def flatten_list(target: list[list[str]]) -> list[str]:
     return sum((flatten_list(sub) if isinstance(sub, list) else [sub] for sub in target), [])
 
 
-def main(plaintext, rails):
-    """
-    This is the main organizing function for this program. It generates the cipher, then decodes it, printing the results to the terminal.
-    """
-
-    cipher: str = generate_cipher_string(plaintext, rails)
-
-    decrypted_cipher: str = decode_cipher(cipher, rails)
-
-    print(f'\nOriginal message:\n{plaintext}\n', sep="")
-    print(f'Encrypted message:\n{cipher}\n', sep="")
-    print(f'Decrypted message:\n{decrypted_cipher}\n', sep="")
-
-
 if __name__ == '__main__':
 
     plaintext = "WEAREDISCOVEREDFLEEATONCE"
@@ -197,4 +227,5 @@ if __name__ == '__main__':
 
     rails = 3  # number of rails; MUST be < len(plaintext)
 
-    main(plaintext, rails)
+    print()
+    cli()
