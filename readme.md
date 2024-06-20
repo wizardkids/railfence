@@ -15,21 +15,21 @@ $ `python railfence.py --help`
 
 Usage: railfence.py [OPTIONS] [PLAINTEXT]
 
-  The utility either encrypts or decrypts a message using railfence encryption.
+This utility either encrypts or decrypts a message using railfence encryption.
 
-Options:
-  -r, --rails INTEGER  Number of rails.  [default: 3]
-  -e, --encrypt        Encrypt the plaintext.
-  -d, --decrypt        Decrypt the encrypted text.
-  --version            Show the version and exit.
-  --help               Show this message and exit.
+Options:</br>
+  -r, --rails INTEGER  Number of rails.  [default: 3]</br>
+  -e, --encrypt        Encrypt the plaintext.</br>
+  -d, --decrypt        Decrypt the encrypted text.</br>
+  --version            Show the version and exit.</br>
+  --help               Show this message and exit.</br>
 
-To encrypt a plaintext message:
+To encrypt a plaintext message:</br>
 $ `python railfence.py -r 3 -e "WEAREDISCOVEREDFLEEATONCE"`
 
 This will create a file `encrypted_message.json` containing the encrypted message and the number of rails used.
 
-To decrypt an encrypted message:
+To decrypt an encrypted message:</br>
 $ `python railfence.py -d`
 
 This will read the `encrypted_message.json` file and decrypt the message using the stored number of rails, creating a `decrypted_message.json` file with the original plaintext.
