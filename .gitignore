@@ -1,2 +1,8 @@
-*.json
+/versions
+.gitignore
+__init__.py
+railfence_original.py
 scratch.py
+*.pyc
+*.txt
+*.json
