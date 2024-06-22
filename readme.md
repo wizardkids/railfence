@@ -30,7 +30,8 @@ The ciphertext is obtained by reading the rails from left to right, top to botto
 ```
 Usage: railfence.py [OPTIONS] [PLAINTEXT]
 
-This utility either encrypts or decrypts a message using railfence encryption.
+  This utility either encrypts or decrypts a message using railfence
+  encryption.
 
 Options:
   -r, --rails INTEGER  Number of rails.  [default: 3]
