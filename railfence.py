@@ -29,7 +29,7 @@ Source: https://en.wikipedia.org/wiki/Rail_fence_cipher
 import json
 
 import click
-from icecream import ic
+# from icecream import ic
 
 VERSION = "0.1"
 
